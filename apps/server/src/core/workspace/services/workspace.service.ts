@@ -89,6 +89,9 @@ export class WorkspaceService {
     const workspace = await this.db
       .selectFrom('workspaces')
       .select(['id', 'name', 'logo', 'hostname', 'enforceSso', 'licenseKey', 'plan'])
+      .select([
+        'settings',
+      ])
       .select((eb) =>
         jsonArrayFrom(
           eb
@@ -109,9 +112,10 @@ export class WorkspaceService {
       throw new NotFoundException('Workspace not found');
     }
 
-    const { licenseKey, plan, ...rest } = workspace;
+    const { licenseKey, plan, settings, ...rest } = workspace;
+    const icpInfo = (settings as any)?.general?.icpInfo;
 
-    return rest;
+    return { ...rest, icpInfo };
   }
 
   async create(
@@ -472,12 +476,27 @@ export class WorkspaceService {
         );
       }
 
+      if (typeof (updateWorkspaceDto as any).icpInfo !== 'undefined') {
+        const prev = settingsBefore?.general?.icpInfo ?? '';
+        if (prev !== (updateWorkspaceDto as any).icpInfo) {
+          before.icpInfo = prev;
+          after.icpInfo = (updateWorkspaceDto as any).icpInfo;
+        }
+        await this.workspaceRepo.updateGeneralSettings(
+          workspaceId,
+          'icpInfo',
+          (updateWorkspaceDto as any).icpInfo,
+          trx,
+        );
+      }
+
       delete updateWorkspaceDto.restrictApiToAdmins;
       delete updateWorkspaceDto.aiSearch;
       delete updateWorkspaceDto.generativeAi;
       delete updateWorkspaceDto.disablePublicSharing;
       delete updateWorkspaceDto.mcpEnabled;
       delete updateWorkspaceDto.aiChat;
+      delete (updateWorkspaceDto as any).icpInfo;
 
       await this.workspaceRepo.updateWorkspace(
         updateWorkspaceDto,

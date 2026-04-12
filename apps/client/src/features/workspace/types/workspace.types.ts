@@ -33,6 +33,11 @@ export interface IWorkspaceSettings {
   ai?: IWorkspaceAiSettings;
   sharing?: IWorkspaceSharingSettings;
   api?: IWorkspaceApiSettings;
+  general?: IWorkspaceGeneralSettings;
+}
+
+export interface IWorkspaceGeneralSettings {
+  icpInfo?: string;
 }
 
 export interface IWorkspaceApiSettings {
@@ -84,6 +89,7 @@ export interface IPublicWorkspace {
   hostname: string;
   enforceSso: boolean;
   authProviders: IAuthProvider[];
+  icpInfo?: string;
 }
 
 export interface IVersion {
