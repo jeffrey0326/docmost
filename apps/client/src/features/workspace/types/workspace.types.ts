@@ -27,6 +27,7 @@ export interface IWorkspace {
   mcpEnabled?: boolean;
   trashRetentionDays?: number;
   restrictApiToAdmins?: boolean;
+  icpInfo?: string;
 }
 
 export interface IWorkspaceSettings {
