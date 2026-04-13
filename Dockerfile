@@ -1,5 +1,5 @@
 FROM node:22-slim AS base
-LABEL org.opencontainers.image.source="https://github.com/docmost/docmost"
+LABEL org.opencontainers.image.source="https://github.com/jeffrey0326/docmost"
 
 RUN npm install -g pnpm@10.4.0
 
@@ -8,6 +8,8 @@ FROM base AS builder
 WORKDIR /app
 
 COPY . .
+
+RUN pnpm config set registry https://registry.npmmirror.com
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm build
